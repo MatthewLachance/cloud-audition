@@ -2,10 +2,11 @@ package messagemap
 
 import "sync"
 
-type message struct {
-	id           int
-	message      string
-	isPalindrome bool
+// Message struct
+type Message struct {
+	ID           int    `json:"id"`
+	Msg          string `json:"msg"`
+	IsPalindrome bool   `json:"isPalindrome"`
 }
 
 var (
@@ -15,8 +16,8 @@ var (
 
 var messagemap = struct {
 	sync.RWMutex
-	m map[int]*message
-}{m: make(map[int]*message)}
+	m map[int]*Message
+}{m: make(map[int]*Message)}
 
 func generateID() int {
 	mu.Lock()
@@ -26,6 +27,36 @@ func generateID() int {
 	return res
 }
 
-func AddMessage(msg string, isPalindrome bool) {
+// AddMessage is a func that
+func AddMessage(msg string, isPalindrome bool) (*Message, error) {
 	id := generateID()
+
+	message := &Message{
+		ID:           id,
+		Msg:          msg,
+		IsPalindrome: isPalindrome,
+	}
+
+	messagemap.Lock()
+	messagemap.m[id] = message
+	messagemap.Unlock()
+
+	return message, nil
 }
+
+/*
+func UpdateMessage(msg string, id string, isPalindrome bool) (*Message, error) {
+
+}
+
+func GetMessage(id string) (*Message, error) {
+
+}
+
+func GetMessages() {
+
+}
+
+func DeleteMessage(id string) error {
+
+}*/

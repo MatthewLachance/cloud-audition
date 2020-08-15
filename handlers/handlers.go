@@ -1,13 +1,40 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
+
+	messagemap "github.com/DragonSSS/cloud-audition-interview/messagemap"
 )
 
 // CreateMessage is the handler
 func CreateMessage(w http.ResponseWriter, r *http.Request) {
+	var m messagemap.Message
 
+	err := json.NewDecoder(r.Body).Decode(&m)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resMsg, errMap := messagemap.AddMessage(m.Msg, isPalindrome(m.Msg))
+
+	if errMap != nil {
+		http.Error(w, errMap.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	msgJSON, errJSON := json.Marshal(resMsg)
+
+	if errJSON != nil {
+		http.Error(w, errJSON.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(msgJSON)
 }
 
 // GetMessage is the handler
