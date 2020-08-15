@@ -18,17 +18,17 @@ func CreateMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resMsg, errMap := messagemap.AddMessage(m.Msg, isPalindrome(m.Msg))
+	resMsg, err := messagemap.AddMessage(m.Msg, isPalindrome(m.Msg))
 
-	if errMap != nil {
-		http.Error(w, errMap.Error(), http.StatusInternalServerError)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	msgJSON, errJSON := json.Marshal(resMsg)
+	msgJSON, err := json.Marshal(resMsg)
 
-	if errJSON != nil {
-		http.Error(w, errJSON.Error(), http.StatusInternalServerError)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
