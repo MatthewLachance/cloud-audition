@@ -1,6 +1,9 @@
 package messagemap
 
-import "sync"
+import (
+	"errors"
+	"sync"
+)
 
 // Message struct
 type Message struct {
@@ -19,6 +22,9 @@ var messagemap = struct {
 	m map[int]*Message
 }{m: make(map[int]*Message)}
 
+// ErrorNoSuchKey is the error of non-existing key
+var ErrorNoSuchKey = errors.New("invalid id that doesn't exit in messages map")
+
 func generateID() int {
 	mu.Lock()
 	id++
@@ -27,9 +33,34 @@ func generateID() int {
 	return res
 }
 
-// AddMessage is a func that
-func AddMessage(msg string, isPalindrome bool) (*Message, error) {
+// CreateMessage is the func that
+func CreateMessage(msg string, isPalindrome bool) *Message {
 	id := generateID()
+
+	message := &Message{
+		ID:           id,
+		Msg:          msg,
+		IsPalindrome: isPalindrome,
+	}
+
+	messagemap.Lock()
+	messagemap.m[id] = message
+	messagemap.Unlock()
+
+	return message
+}
+
+// UpdateMessage is the func that
+func UpdateMessage(msg string, id int, isPalindrome bool) (*Message, error) {
+
+	// check if id exist in map
+	messagemap.RLock()
+	_, found := messagemap.m[id]
+	messagemap.RUnlock()
+
+	if !found {
+		return &Message{}, ErrorNoSuchKey
+	}
 
 	message := &Message{
 		ID:           id,
@@ -44,19 +75,59 @@ func AddMessage(msg string, isPalindrome bool) (*Message, error) {
 	return message, nil
 }
 
-/*
-func UpdateMessage(msg string, id string, isPalindrome bool) (*Message, error) {
+// GetMessage is the func that
+func GetMessage(id int) (*Message, error) {
 
+	// check if id exist in map
+	messagemap.RLock()
+	_, found := messagemap.m[id]
+	messagemap.RUnlock()
+
+	if !found {
+		return &Message{}, ErrorNoSuchKey
+	}
+
+	messagemap.RLock()
+	message := messagemap.m[id]
+	messagemap.RUnlock()
+
+	return message, nil
 }
 
-func GetMessage(id string) (*Message, error) {
+// GetMessages is the func that
+func GetMessages() []Message {
+	messagemap.RLock()
+	size := len(messagemap.m)
 
+	if size == 0 {
+		return []Message{}
+	}
+
+	res := make([]Message, len(messagemap.m))
+	index := 0
+
+	for _, value := range messagemap.m {
+		res[index] = *value
+		index++
+	}
+	messagemap.RUnlock()
+
+	return res
 }
 
-func GetMessages() {
+// DeleteMessage is the func that
+func DeleteMessage(id int) error {
+	// check if id exist in map
+	messagemap.RLock()
+	_, found := messagemap.m[id]
+	messagemap.RUnlock()
 
+	if !found {
+		return ErrorNoSuchKey
+	}
+
+	messagemap.RLock()
+	delete(messagemap.m, id)
+	messagemap.Unlock()
+	return nil
 }
-
-func DeleteMessage(id string) error {
-
-}*/
