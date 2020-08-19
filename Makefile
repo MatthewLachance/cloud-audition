@@ -34,11 +34,11 @@ build-linux:
 		CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o build/bin/$(BINARY_UNIX) -v
 
 build-image:
-		docker build -t cloudaudition:latest .
+		docker build -t cloudaudition:test .
 
 lint-local:
 		docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.30.0 $(LINTER) run -v
 lint:
 		$(LINTER) run
 
-.PHONY: all build clean setup build-linux test show-coverage build-image
+.PHONY: all build clean setup build-linux test show-coverage build-image lint-local lint

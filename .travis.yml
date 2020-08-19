@@ -33,4 +33,8 @@ jobs:
 
         # Set kind context to kubectl
         - kubectl cluster-info --context kind-testcluster
-      script: kubectl get nodes && kubectl get pods --all-namespaces -o wide
+      script: 
+        - kubectl get nodes && kubectl get pods --all-namespaces -o wide
+        - make build-image
+        - kind load docker-imag cloudaudition:test
+        - docker exec -it testcluster-control-plane crictl images
