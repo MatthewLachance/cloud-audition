@@ -1,7 +1,10 @@
 package messagemap
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateMessage(t *testing.T) {
@@ -16,23 +19,19 @@ func TestCreateMessage(t *testing.T) {
 	actualMsg := message.Msg
 	actualIsPalindrome := message.IsPalindrome
 
-	if actualID != expectedID {
-		t.Errorf("Expected the id to be %d but instead got %d!", expectedID, actualID)
-	}
+	str := fmt.Sprintf("Expected the id to be %d, actually got %d!", expectedID, actualID)
+	assert.Equal(t, expectedID, actualID, str)
 
-	if actualMsg != expectedMsg {
-		t.Errorf("Expected the message to be %s but instead got %s!", expectedMsg, actualMsg)
-	}
+	str = fmt.Sprintf("Expected the message to be %s, actually got %s!", expectedMsg, actualMsg)
+	assert.Equal(t, expectedMsg, actualMsg, str)
 
-	if actualIsPalindrome != expectedIsPalindrome {
-		t.Errorf("Expected the sPalindrome to be %t but instead got %t!", expectedIsPalindrome, actualIsPalindrome)
-	}
+	str = fmt.Sprintf("Expected the sPalindrome to be %t, actually got %t!", expectedIsPalindrome, actualIsPalindrome)
+	assert.Equal(t, expectedIsPalindrome, actualIsPalindrome, str)
 
 	secondMessage := CreateMessage(expectedMsg, expectedIsPalindrome)
 
-	if secondMessage.ID != 2 {
-		t.Errorf("Expected the id to be %d but instead got %d!", 2, secondMessage.ID)
-	}
+	str = fmt.Sprintf("Expected the id to be %d, actually got %d!", 2, secondMessage.ID)
+	assert.Equal(t, 2, secondMessage.ID, "")
 	CleanMap()
 }
 
@@ -45,28 +44,22 @@ func TestGetMessage(t *testing.T) {
 	expectedMessage := CreateMessage(expectedMsg, expectedIsPalindrome)
 	actualMessage, err := GetMessage(expectedID)
 
-	if err != nil {
-		t.Errorf("Expected to get the message but instead got error: %s", err.Error())
-	}
+	assert.Nil(t, err, "Expected to get the message without error")
 
-	if actualMessage.ID != expectedMessage.ID {
-		t.Errorf("Expected the id to be %d but instead got %d!", expectedMessage.ID, actualMessage.ID)
-	}
+	str := fmt.Sprintf("Expected the id to be %d, actually got %d!", expectedMessage.ID, actualMessage.ID)
+	assert.Equal(t, expectedMessage.ID, actualMessage.ID, str)
 
-	if actualMessage.Msg != expectedMessage.Msg {
-		t.Errorf("Expected the message to be %s but instead got %s!", expectedMessage.Msg, actualMessage.Msg)
-	}
+	str = fmt.Sprintf("Expected the message to be %s, actually got %s!", expectedMessage.Msg, actualMessage.Msg)
+	assert.Equal(t, expectedMessage.Msg, actualMessage.Msg, str)
 
-	if actualMessage.IsPalindrome != expectedMessage.IsPalindrome {
-		t.Errorf("Expected the isPalindrome to be %t but instead got %t!", expectedMessage.IsPalindrome, actualMessage.IsPalindrome)
-	}
+	str = fmt.Sprintf("Expected the isPalindrome to be %t, actually got %t!", expectedMessage.IsPalindrome, actualMessage.IsPalindrome)
+	assert.Equal(t, expectedMessage.IsPalindrome, actualMessage.IsPalindrome, str)
 
 	nonexitingID := 2
 	_, err = GetMessage(nonexitingID)
 
-	if err != ErrorNoSuchKey {
-		t.Error("Expected the error to be ErrorNoSuchKey but instead got nil!")
-	}
+	assert.EqualError(t, err, ErrorNoSuchKey.Error(), "Expected the error to be ErrorNoSuchKey")
+
 	CleanMap()
 }
 
@@ -83,30 +76,23 @@ func TestUpdateMessage(t *testing.T) {
 
 	_, err := UpdateMessage(updatedMsg, expectedID, updatedIsPalindrome)
 
-	if err != nil {
-		t.Errorf("Expected to update the message but instead got error: %s", err.Error())
-	}
+	assert.Nil(t, err, "Expected to update the message without error")
 
 	updatedMessage, _ := GetMessage(expectedID)
 
-	if updatedMessage.ID != expectedMessage.ID {
-		t.Errorf("Expected the id to be %d but instead got %d!", expectedMessage.ID, updatedMessage.ID)
-	}
+	str := fmt.Sprintf("Expected the id to be %d, actually got %d!", expectedMessage.ID, updatedMessage.ID)
+	assert.Equal(t, expectedMessage.ID, updatedMessage.ID, str)
 
-	if updatedMessage.Msg != updatedMsg {
-		t.Errorf("Expected the message to be %s but instead got %s!", expectedMessage.Msg, updatedMessage.Msg)
-	}
+	str = fmt.Sprintf("Expected the message to be %s, actually got %s!", updatedMsg, updatedMessage.Msg)
+	assert.Equal(t, updatedMsg, updatedMessage.Msg, str)
 
-	if updatedMessage.IsPalindrome != updatedIsPalindrome {
-		t.Errorf("Expected the isPalindrome to be %t but instead got %t!", expectedMessage.IsPalindrome, updatedMessage.IsPalindrome)
-	}
+	str = fmt.Sprintf("Expected the isPalindrome to be %t, actually got %t!", updatedIsPalindrome, updatedMessage.IsPalindrome)
+	assert.Equal(t, updatedIsPalindrome, updatedMessage.IsPalindrome, str)
 
 	nonexitingID := 2
 	_, err = UpdateMessage(updatedMsg, nonexitingID, updatedIsPalindrome)
 
-	if err != ErrorNoSuchKey {
-		t.Error("Expected the error to be ErrorNoSuchKey but instead got nil!")
-	}
+	assert.EqualError(t, err, ErrorNoSuchKey.Error(), "Expected the error to be ErrorNoSuchKey")
 
 	CleanMap()
 }
@@ -122,24 +108,20 @@ func TestGetMessages(t *testing.T) {
 		expectedMessage = CreateMessage(expectedMsg, expectedIsPalindrome)
 	}
 
-	if expectedMessage.ID != 3 {
-		t.Errorf("Expected the id to be %d but instead got %d!", numberMsgs, expectedMessage.ID)
-	}
+	str := fmt.Sprintf("Expected the id to be %d, actually got %d!", numberMsgs, expectedMessage.ID)
+	assert.Equal(t, numberMsgs, expectedMessage.ID, str)
 
 	messages := GetMessages()
 
-	if len(messages) != numberMsgs {
-		t.Errorf("Expected the number of messages to be %d but instead got %d!", numberMsgs, len(messages))
-	}
+	str = fmt.Sprintf("Expected the number of messages to be %d, actually got %d!", numberMsgs, len(messages))
+	assert.Equal(t, numberMsgs, len(messages), str)
 
 	for _, m := range messages {
-		if m.Msg != expectedMsg {
-			t.Errorf("Expected the message to be %s but instead got %s!", expectedMsg, m.Msg)
-		}
+		str = fmt.Sprintf("Expected the message to be %s, actually got %s!", expectedMsg, m.Msg)
+		assert.Equal(t, expectedMsg, m.Msg, str)
 
-		if m.IsPalindrome != expectedIsPalindrome {
-			t.Errorf("Expected the isPalindrome to be %t but instead got %t!", expectedIsPalindrome, m.IsPalindrome)
-		}
+		str = fmt.Sprintf("Expected the isPalindrome to be %t, actually got %t!", expectedIsPalindrome, m.IsPalindrome)
+		assert.Equal(t, expectedIsPalindrome, m.IsPalindrome, str)
 	}
 	CleanMap()
 }
@@ -158,20 +140,15 @@ func TestDeleteMessage(t *testing.T) {
 
 	err := DeleteMessage(expectedMessage.ID)
 
-	if err != nil {
-		t.Errorf("Expected to delete the message but instead got error: %s", err.Error())
-	}
+	assert.Nil(t, err, "Expected to delete the message without error")
 
 	numberRest := len(GetMessages())
-	if numberRest != numberMsgs-1 {
-		t.Errorf("Expected the number of rest messages to be %d but instead got %d", numberMsgs-1, numberRest)
-	}
+	str := fmt.Sprintf("Expected the number of rest messages to be %d but instead got %d", numberMsgs-1, numberRest)
+	assert.Equal(t, numberMsgs-1, numberRest, str)
 
 	err = DeleteMessage(expectedMessage.ID)
 
-	if err != ErrorNoSuchKey {
-		t.Error("Expected the error to be ErrorNoSuchKey but instead got nil!")
-	}
+	assert.EqualError(t, err, ErrorNoSuchKey.Error(), "Expected the error to be ErrorNoSuchKey")
 
 	CleanMap()
 }

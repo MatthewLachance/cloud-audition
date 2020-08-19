@@ -40,8 +40,8 @@ func main() {
 	// delte
 	router.HandleFunc("/messages/{messageID}", handlers.DeleteMessage).Methods("DELETE")
 
-	// health
-	router.HandleFunc("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// healthz
+	router.HandleFunc("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if atomic.LoadInt32(&healthy) == 1 {
 			w.WriteHeader(http.StatusNoContent)
 			return
