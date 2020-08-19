@@ -137,4 +137,8 @@ func CleanMap() {
 	messagemap.Lock()
 	messagemap.m = make(map[int]*Message)
 	messagemap.Unlock()
+
+	mu.Lock()
+	id = 0
+	mu.Unlock()
 }
