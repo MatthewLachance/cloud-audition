@@ -5,16 +5,19 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
 	"time"
 
 	"github.com/gorilla/mux"
-	httpSwagger "github.com/swaggo/http-swagger"
 
 	handlers "github.com/DragonSSS/cloud-audition-interview/handlers"
+	messagemap "github.com/DragonSSS/cloud-audition-interview/messagemap"
 
 	log "github.com/sirupsen/logrus"
 )
+
+var healthy int32
 
 func main() {
 
@@ -37,7 +40,14 @@ func main() {
 	// delte
 	router.HandleFunc("/messages/{messageID}", handlers.DeleteMessage).Methods("DELETE")
 
-	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
+	// health
+	router.HandleFunc("/health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if atomic.LoadInt32(&healthy) == 1 {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}))
 
 	service := &http.Server{
 		Addr:    ":8080",
@@ -48,17 +58,19 @@ func main() {
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
+		atomic.StoreInt32(&healthy, 1)
 		if err := service.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
 	log.Info("Server started")
 	<-done
-	log.Info("Server Stopped")
+	log.Info("Server Stopping")
+	atomic.StoreInt32(&healthy, 0)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
-		// extra handling here
+		messagemap.CleanMap()
 		cancel()
 	}()
 

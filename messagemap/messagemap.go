@@ -33,7 +33,7 @@ func generateID() int {
 	return res
 }
 
-// CreateMessage is the func that
+// CreateMessage is the func that adds message into map
 func CreateMessage(msg string, isPalindrome bool) *Message {
 	id := generateID()
 
@@ -50,7 +50,7 @@ func CreateMessage(msg string, isPalindrome bool) *Message {
 	return message
 }
 
-// UpdateMessage is the func that
+// UpdateMessage is the func that updates message with id and content into map
 func UpdateMessage(msg string, id int, isPalindrome bool) (*Message, error) {
 
 	// check if id exist in map
@@ -75,7 +75,7 @@ func UpdateMessage(msg string, id int, isPalindrome bool) (*Message, error) {
 	return message, nil
 }
 
-// GetMessage is the func that
+// GetMessage is the func that gets message with id from map
 func GetMessage(id int) (*Message, error) {
 
 	// check if id exist in map
@@ -94,7 +94,7 @@ func GetMessage(id int) (*Message, error) {
 	return message, nil
 }
 
-// GetMessages is the func that
+// GetMessages is the func that gets all messages from map
 func GetMessages() []Message {
 	messagemap.RLock()
 	size := len(messagemap.m)
@@ -115,7 +115,7 @@ func GetMessages() []Message {
 	return res
 }
 
-// DeleteMessage is the func that
+// DeleteMessage is the func that deletes message from map
 func DeleteMessage(id int) error {
 	// check if id exist in map
 	messagemap.RLock()
@@ -126,8 +126,15 @@ func DeleteMessage(id int) error {
 		return ErrorNoSuchKey
 	}
 
-	messagemap.RLock()
+	messagemap.Lock()
 	delete(messagemap.m, id)
 	messagemap.Unlock()
 	return nil
+}
+
+// CleanMap is the func that makes map empty
+func CleanMap() {
+	messagemap.Lock()
+	messagemap.m = make(map[int]*Message)
+	messagemap.Unlock()
 }
