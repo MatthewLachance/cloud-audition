@@ -10,6 +10,7 @@ import (
 	messagemap "github.com/DragonSSS/cloud-audition-interview/messagemap"
 	"github.com/golang/gddo/httputil/header"
 	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 var errorMissingMessageID = errors.New("messageID parameter is missing in request")
@@ -43,7 +44,7 @@ func CreateMessage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	w.Write(msgJSON)
+	logger(w.Write(msgJSON))
 }
 
 // GetMessage is the handler that gets message with id
@@ -79,7 +80,7 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(msgJSON)
+	logger(w.Write(msgJSON))
 }
 
 // GetMessages is the handler that gets all messages
@@ -94,7 +95,7 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(msgJSON)
+	logger(w.Write(msgJSON))
 }
 
 // UpdateMessage is the handler that updates with id and message
@@ -147,7 +148,7 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(msgJSON)
+	logger(w.Write(msgJSON))
 }
 
 // DeleteMessage is the handler that deletes message with id
@@ -178,7 +179,7 @@ func DeleteMessage(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	logger(w.Write(res))
 }
 
 func isPalindrome(s string) bool {
@@ -210,4 +211,10 @@ func isChar(c byte) bool {
 		return true
 	}
 	return false
+}
+
+func logger(n int, err error) {
+	if err != nil {
+		log.Error(err)
+	}
 }

@@ -31,7 +31,7 @@ func TestCreateMessage(t *testing.T) {
 	secondMessage := CreateMessage(expectedMsg, expectedIsPalindrome)
 
 	str = fmt.Sprintf("Expected the id to be %d, actually got %d!", 2, secondMessage.ID)
-	assert.Equal(t, 2, secondMessage.ID, "")
+	assert.Equal(t, 2, secondMessage.ID, str)
 	CleanMap()
 }
 

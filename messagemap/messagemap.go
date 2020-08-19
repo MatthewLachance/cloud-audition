@@ -97,11 +97,6 @@ func GetMessage(id int) (*Message, error) {
 // GetMessages is the func that gets all messages from map
 func GetMessages() []Message {
 	messagemap.RLock()
-	size := len(messagemap.m)
-
-	if size == 0 {
-		return []Message{}
-	}
 
 	res := make([]Message, len(messagemap.m))
 	index := 0

@@ -62,7 +62,8 @@ func TestGetMessageHandler(t *testing.T) {
 	GetMessage(w, r)
 
 	resp := w.Result()
-	json.NewDecoder(resp.Body).Decode(&actualMessage)
+	err := json.NewDecoder(resp.Body).Decode(&actualMessage)
+	assert.Nil(t, err)
 	assert.Equal(t, expectedMessage.ID, actualMessage.ID, "expected 1 message id")
 	assert.Equal(t, 200, resp.StatusCode, "expected 200 status code")
 	messagemap.CleanMap()
@@ -87,7 +88,8 @@ func TestUpdateMessageHandler(t *testing.T) {
 	UpdateMessage(w, r)
 
 	resp := w.Result()
-	json.NewDecoder(resp.Body).Decode(&actualMessage)
+	err := json.NewDecoder(resp.Body).Decode(&actualMessage)
+	assert.Nil(t, err)
 	assert.Equal(t, expectedMessage.ID, actualMessage.ID, "expected 1 message id")
 	assert.Equal(t, 200, resp.StatusCode, "expected 200 status code")
 	assert.Equal(t, true, actualMessage.IsPalindrome, "expected IsPalindrome true")
@@ -118,5 +120,28 @@ func TestDeleteMessageHandler(t *testing.T) {
 	assert.Equal(t, 200, resp.StatusCode, "expected 200 status code")
 	assert.True(t, strings.Contains(bodyStr, "success"), "expected response has success str")
 	assert.Equal(t, messagemap.ErrorNoSuchKey.Error(), err.Error(), "expected ErrorNoSuchKey error")
+	messagemap.CleanMap()
+}
+
+func TestGetMessagesHandler(t *testing.T) {
+	expectedMsg := "message"
+	expectedIsPalindrome := false
+
+	for i := 0; i < 3; i++ {
+		messagemap.CreateMessage(expectedMsg, expectedIsPalindrome)
+	}
+	r, _ := http.NewRequest("GET", "/messages", nil)
+	w := httptest.NewRecorder()
+
+	GetMessages(w, r)
+	resp := w.Result()
+	body, _ := ioutil.ReadAll(resp.Body)
+
+	var messages []messagemap.Message
+	err := json.Unmarshal(body, &messages)
+
+	assert.Nil(t, err, "messages read successfully")
+	assert.Equal(t, 200, resp.StatusCode, "expected 200 status code")
+	assert.Equal(t, 3, len(messages), "get all 3 messages")
 	messagemap.CleanMap()
 }

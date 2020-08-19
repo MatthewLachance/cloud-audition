@@ -1,2 +1,3 @@
 build/bin
 go.sum
+coverage.out
