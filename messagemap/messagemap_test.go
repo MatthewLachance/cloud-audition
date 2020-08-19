@@ -112,9 +112,66 @@ func TestUpdateMessage(t *testing.T) {
 }
 
 func TestGetMessages(t *testing.T) {
+	expectedMsg := "message"
+	expectedIsPalindrome := false
 
+	numberMsgs := 3
+
+	var expectedMessage *Message
+	for i := 0; i < numberMsgs; i++ {
+		expectedMessage = CreateMessage(expectedMsg, expectedIsPalindrome)
+	}
+
+	if expectedMessage.ID != 3 {
+		t.Errorf("Expected the id to be %d but instead got %d!", numberMsgs, expectedMessage.ID)
+	}
+
+	messages := GetMessages()
+
+	if len(messages) != numberMsgs {
+		t.Errorf("Expected the number of messages to be %d but instead got %d!", numberMsgs, len(messages))
+	}
+
+	for _, m := range messages {
+		if m.Msg != expectedMsg {
+			t.Errorf("Expected the message to be %s but instead got %s!", expectedMsg, m.Msg)
+		}
+
+		if m.IsPalindrome != expectedIsPalindrome {
+			t.Errorf("Expected the isPalindrome to be %t but instead got %t!", expectedIsPalindrome, m.IsPalindrome)
+		}
+	}
+	CleanMap()
 }
 
 func TestDeleteMessage(t *testing.T) {
 
+	expectedMsg := "message"
+	expectedIsPalindrome := false
+
+	numberMsgs := 3
+
+	var expectedMessage *Message
+	for i := 0; i < numberMsgs; i++ {
+		expectedMessage = CreateMessage(expectedMsg, expectedIsPalindrome)
+	}
+
+	err := DeleteMessage(expectedMessage.ID)
+
+	if err != nil {
+		t.Errorf("Expected to delete the message but instead got error: %s", err.Error())
+	}
+
+	numberRest := len(GetMessages())
+	if numberRest != numberMsgs-1 {
+		t.Errorf("Expected the number of rest messages to be %d but instead got %d", numberMsgs-1, numberRest)
+	}
+
+	err = DeleteMessage(expectedMessage.ID)
+
+	if err != ErrorNoSuchKey {
+		t.Error("Expected the error to be ErrorNoSuchKey but instead got nil!")
+	}
+
+	CleanMap()
 }
