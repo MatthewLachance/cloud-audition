@@ -36,5 +36,5 @@ jobs:
       script: 
         - kubectl get nodes && kubectl get pods --all-namespaces -o wide
         - make build-image
-        - kind load docker-image cloudaudition:test
+        - kind load docker-image cloudaudition:test --name testcluster
         - docker exec -it testcluster-control-plane crictl images
