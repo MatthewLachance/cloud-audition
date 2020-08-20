@@ -1,0 +1,157 @@
+basePath: /
+definitions:
+  handlers.Message:
+    properties:
+      msg:
+        type: string
+    type: object
+  messagemap.InternalMessage:
+    properties:
+      id:
+        type: integer
+      isPalindrome:
+        type: boolean
+      msg:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: demo@gamil.com
+    name: API Support
+  description: This is a service to manage messages and check palindrome
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Cloud Audition API
+  version: "1.0"
+paths:
+  /messages:
+    get:
+      consumes:
+      - application/json
+      description: Get details of all messages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/messagemap.InternalMessage'
+            type: array
+      summary: Get details of all messages
+      tags:
+      - messages
+    post:
+      consumes:
+      - application/json
+      description: Create a new message with the content
+      parameters:
+      - description: Create message
+        in: body
+        name: Message
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Message'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/messagemap.InternalMessage'
+        "400":
+          description: Failed to decode request body
+        "415":
+          description: Content-Type header is not application/json
+        "500":
+          description: Interal server failure
+      summary: Create a message
+      tags:
+      - messages
+  /messages/{messageID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the message corresponding to the input messageID
+      parameters:
+      - description: ID of the message to be deleted
+        in: path
+        name: messageID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid parameter messageID
+        "404":
+          description: Invalid id that doesn't exit in messages map
+      summary: Delete message identified by the given messageID
+      tags:
+      - messages
+    get:
+      consumes:
+      - application/json
+      description: Get details of message corresponding to the input messageID
+      parameters:
+      - description: ID of the message
+        in: path
+        name: messageID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/messagemap.InternalMessage'
+        "400":
+          description: Failed to get valid parameter of messageID
+        "404":
+          description: Invalid id that doesn't exit in messages map
+        "500":
+          description: Interal server failure
+      summary: Get details for a given messageID
+      tags:
+      - messages
+    put:
+      consumes:
+      - application/json
+      description: Update the message corresponding to the input messageID
+      parameters:
+      - description: ID of the message to be updated
+        in: path
+        name: messageID
+        required: true
+        type: integer
+      - description: Update message
+        in: body
+        name: Message
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Message'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/messagemap.InternalMessage'
+        "400":
+          description: Invalid parameter or request body
+        "404":
+          description: Invalid id that doesn't exit in messages map
+        "415":
+          description: Content-Type header is not application/json
+        "500":
+          description: Interal server failure
+      summary: Update message identified by the given messageID
+      tags:
+      - messages
+swagger: "2.0"

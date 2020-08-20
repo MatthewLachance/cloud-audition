@@ -5,8 +5,8 @@ import (
 	"sync"
 )
 
-// Message struct
-type Message struct {
+// InternalMessage struct
+type InternalMessage struct {
 	ID           int    `json:"id"`
 	Msg          string `json:"msg"`
 	IsPalindrome bool   `json:"isPalindrome"`
@@ -19,8 +19,8 @@ var (
 
 var messagemap = struct {
 	sync.RWMutex
-	m map[int]*Message
-}{m: make(map[int]*Message)}
+	m map[int]*InternalMessage
+}{m: make(map[int]*InternalMessage)}
 
 // ErrorNoSuchKey is the error of non-existing key
 var ErrorNoSuchKey = errors.New("invalid id that doesn't exit in messages map")
@@ -34,10 +34,10 @@ func generateID() int {
 }
 
 // CreateMessage is the func that adds message into map
-func CreateMessage(msg string, isPalindrome bool) *Message {
+func CreateMessage(msg string, isPalindrome bool) *InternalMessage {
 	id := generateID()
 
-	message := &Message{
+	message := &InternalMessage{
 		ID:           id,
 		Msg:          msg,
 		IsPalindrome: isPalindrome,
@@ -51,7 +51,7 @@ func CreateMessage(msg string, isPalindrome bool) *Message {
 }
 
 // UpdateMessage is the func that updates message with id and content into map
-func UpdateMessage(msg string, id int, isPalindrome bool) (*Message, error) {
+func UpdateMessage(msg string, id int, isPalindrome bool) (*InternalMessage, error) {
 
 	// check if id exist in map
 	messagemap.RLock()
@@ -59,10 +59,10 @@ func UpdateMessage(msg string, id int, isPalindrome bool) (*Message, error) {
 	messagemap.RUnlock()
 
 	if !found {
-		return &Message{}, ErrorNoSuchKey
+		return &InternalMessage{}, ErrorNoSuchKey
 	}
 
-	message := &Message{
+	message := &InternalMessage{
 		ID:           id,
 		Msg:          msg,
 		IsPalindrome: isPalindrome,
@@ -76,7 +76,7 @@ func UpdateMessage(msg string, id int, isPalindrome bool) (*Message, error) {
 }
 
 // GetMessage is the func that gets message with id from map
-func GetMessage(id int) (*Message, error) {
+func GetMessage(id int) (*InternalMessage, error) {
 
 	// check if id exist in map
 	messagemap.RLock()
@@ -84,7 +84,7 @@ func GetMessage(id int) (*Message, error) {
 	messagemap.RUnlock()
 
 	if !found {
-		return &Message{}, ErrorNoSuchKey
+		return &InternalMessage{}, ErrorNoSuchKey
 	}
 
 	messagemap.RLock()
@@ -95,10 +95,10 @@ func GetMessage(id int) (*Message, error) {
 }
 
 // GetMessages is the func that gets all messages from map
-func GetMessages() []Message {
+func GetMessages() []InternalMessage {
 	messagemap.RLock()
 
-	res := make([]Message, len(messagemap.m))
+	res := make([]InternalMessage, len(messagemap.m))
 	index := 0
 
 	for _, value := range messagemap.m {
@@ -130,7 +130,7 @@ func DeleteMessage(id int) error {
 // CleanMap is the func that makes map empty
 func CleanMap() {
 	messagemap.Lock()
-	messagemap.m = make(map[int]*Message)
+	messagemap.m = make(map[int]*InternalMessage)
 	messagemap.Unlock()
 
 	mu.Lock()

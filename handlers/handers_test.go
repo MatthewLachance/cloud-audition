@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/DragonSSS/cloud-audition-interview/messagemap"
@@ -49,7 +48,7 @@ func TestGetMessageHandler(t *testing.T) {
 	expectedIsPalindrome := false
 
 	expectedMessage := messagemap.CreateMessage(expectedMsg, expectedIsPalindrome)
-	var actualMessage messagemap.Message
+	var actualMessage messagemap.InternalMessage
 
 	r, _ := http.NewRequest("GET", "/messages/1", nil)
 	w := httptest.NewRecorder()
@@ -74,7 +73,7 @@ func TestUpdateMessageHandler(t *testing.T) {
 	expectedIsPalindrome := false
 
 	expectedMessage := messagemap.CreateMessage(expectedMsg, expectedIsPalindrome)
-	var actualMessage messagemap.Message
+	var actualMessage messagemap.InternalMessage
 
 	var jsonStr = []byte(`{"msg":"aaa"}`)
 	r, _ := http.NewRequest("PUT", "/messages/1", bytes.NewBuffer(jsonStr))
@@ -115,10 +114,8 @@ func TestDeleteMessageHandler(t *testing.T) {
 	_, err := messagemap.GetMessage(1)
 
 	resp := w.Result()
-	body, _ := ioutil.ReadAll(resp.Body)
-	bodyStr := string(body)
-	assert.Equal(t, 200, resp.StatusCode, "expected 200 status code")
-	assert.True(t, strings.Contains(bodyStr, "success"), "expected response has success str")
+
+	assert.Equal(t, 204, resp.StatusCode, "expected 204 status code")
 	assert.Equal(t, messagemap.ErrorNoSuchKey.Error(), err.Error(), "expected ErrorNoSuchKey error")
 	messagemap.CleanMap()
 }
@@ -137,7 +134,7 @@ func TestGetMessagesHandler(t *testing.T) {
 	resp := w.Result()
 	body, _ := ioutil.ReadAll(resp.Body)
 
-	var messages []messagemap.Message
+	var messages []messagemap.InternalMessage
 	err := json.Unmarshal(body, &messages)
 
 	assert.Nil(t, err, "messages read successfully")

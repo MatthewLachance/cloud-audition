@@ -103,7 +103,7 @@ func TestGetMessages(t *testing.T) {
 
 	numberMsgs := 3
 
-	var expectedMessage *Message
+	var expectedMessage *InternalMessage
 	for i := 0; i < numberMsgs; i++ {
 		expectedMessage = CreateMessage(expectedMsg, expectedIsPalindrome)
 	}
@@ -133,7 +133,7 @@ func TestDeleteMessage(t *testing.T) {
 
 	numberMsgs := 3
 
-	var expectedMessage *Message
+	var expectedMessage *InternalMessage
 	for i := 0; i < numberMsgs; i++ {
 		expectedMessage = CreateMessage(expectedMsg, expectedIsPalindrome)
 	}

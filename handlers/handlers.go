@@ -15,9 +15,25 @@ import (
 
 var errorMissingMessageID = errors.New("messageID parameter is missing in request")
 
-// CreateMessage is the handler that creates message
+// Message represents the model for a message
+type Message struct {
+	Msg string `json:"msg"`
+}
+
+// CreateMessage godoc
+// @Summary Create a message
+// @Description Create a new message with the content
+// @Tags messages
+// @Accept  json
+// @Produce  json
+// @Param Message body Message true "Create message"
+// @Success 201 {object} messagemap.InternalMessage
+// @Failure 415 "Content-Type header is not application/json"
+// @Failure 400 "Failed to decode request body"
+// @Failure 500 "Interal server failure"
+// @Router /messages [post]
 func CreateMessage(w http.ResponseWriter, r *http.Request) {
-	var m messagemap.Message
+	var m Message
 
 	if r.Header.Get("Content-Type") != "" {
 		value, _ := header.ParseValueAndParams(r.Header, "Content-Type")
@@ -47,7 +63,18 @@ func CreateMessage(w http.ResponseWriter, r *http.Request) {
 	logger(w.Write(msgJSON))
 }
 
-// GetMessage is the handler that gets message with id
+// GetMessage godoc
+// @Summary Get details for a given messageID
+// @Description Get details of message corresponding to the input messageID
+// @Tags messages
+// @Accept  json
+// @Produce  json
+// @Param messageID path int true "ID of the message"
+// @Success 200 {object} messagemap.InternalMessage
+// @Failure 400 "Failed to get valid parameter of messageID"
+// @Failure 404 "Invalid id that doesn't exit in messages map"
+// @Failure 500 "Interal server failure"
+// @Router /messages/{messageID} [get]
 func GetMessage(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	param, ok := vars["messageID"]
@@ -83,7 +110,14 @@ func GetMessage(w http.ResponseWriter, r *http.Request) {
 	logger(w.Write(msgJSON))
 }
 
-// GetMessages is the handler that gets all messages
+// GetMessages godoc
+// @Summary Get details of all messages
+// @Description Get details of all messages
+// @Tags messages
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} messagemap.InternalMessage
+// @Router /messages [get]
 func GetMessages(w http.ResponseWriter, r *http.Request) {
 	resMsgs := messagemap.GetMessages()
 
@@ -98,7 +132,20 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 	logger(w.Write(msgJSON))
 }
 
-// UpdateMessage is the handler that updates with id and message
+// UpdateMessage godoc
+// @Summary Update message identified by the given messageID
+// @Description Update the message corresponding to the input messageID
+// @Tags messages
+// @Accept  json
+// @Produce  json
+// @Param messageID path int true "ID of the message to be updated"
+// @Param Message body Message true "Update message"
+// @Success 200 {object} messagemap.InternalMessage
+// @Failure 415 "Content-Type header is not application/json"
+// @Failure 400 "Invalid parameter or request body"
+// @Failure 404 "Invalid id that doesn't exit in messages map"
+// @Failure 500 "Interal server failure"
+// @Router /messages/{messageID} [put]
 func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 
 	if r.Header.Get("Content-Type") != "" {
@@ -109,7 +156,7 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var m messagemap.Message
+	var m Message
 
 	vars := mux.Vars(r)
 	param, ok := vars["messageID"]
@@ -151,7 +198,17 @@ func UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	logger(w.Write(msgJSON))
 }
 
-// DeleteMessage is the handler that deletes message with id
+// DeleteMessage godoc
+// @Summary Delete message identified by the given messageID
+// @Description Delete the message corresponding to the input messageID
+// @Tags messages
+// @Accept  json
+// @Produce  json
+// @Param messageID path int true "ID of the message to be deleted"
+// @Success 204 "No Content"
+// @Failure 400 "Invalid parameter messageID"
+// @Failure 404 "Invalid id that doesn't exit in messages map"
+// @Router /messages/{messageID} [delete]
 func DeleteMessage(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	param, ok := vars["messageID"]
@@ -173,13 +230,8 @@ func DeleteMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	msg := map[string]string{"result": "success"}
-
-	res, _ := json.Marshal(msg)
-
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	logger(w.Write(res))
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func isPalindrome(s string) bool {

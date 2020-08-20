@@ -19,6 +19,16 @@ import (
 
 var healthy int32
 
+// @title Cloud Audition API
+// @version 1.0
+// @description This is a service to manage messages and check palindrome
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.email demo@gamil.com
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8080
+// @BasePath /
 func main() {
 
 	log.SetFormatter(&log.TextFormatter{
