@@ -38,7 +38,7 @@ jobs:
         - make build-image
         - kind load docker-image cloudaudition:test --name testcluster
         - docker exec -it testcluster-control-plane crictl images
-        - kubectl run cloudaudition --replicas=1 --labels="cloudaudition" --image=docker.io/library/cloudaudition:test --port=8080
+        - kubectl run cloudaudition --replicas=1 --labels="app=cloudaudition" --image=docker.io/library/cloudaudition:test --port=8080
         - kubectl wait --for=condition=available --timeout=600s  deployment/cloudaudition
         - kubectl get deployments cloudaudition
         - kubectl expose deployment cloudaudition --port=8080 --target-port=8080 --name=cloudaudition
