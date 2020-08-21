@@ -66,14 +66,27 @@ jobs:
           EOF
         - kubectl wait --for=condition=available --timeout=600s  deployment/cloudaudition
         - kubectl get deployment cloudaudition
-        - kubectl get pods -l=app=cloudaudition -o wide
-        - POD=$(kubectl get pods --selector app=cloudaudition -o template --template '{{range .items}}{{.metadata.name}} {{.status.phase}}{{"\n"}}{{end}}' | grep Running | head -1 | cut -f1 -d' ')
-        - echo $POD
         - kubectl logs -l app=cloudaudition
-        - kubectl expose deployment cloudaudition --port=8080 --target-port=8080 --name=cloudaudition
+        - |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Service
+          metadata:
+            labels:
+              app: cloudaudition
+            name: cloudaudition
+          spec:
+            selector:
+              app: cloudaudition
+            type: ClusterIP
+            ports:
+              - protocol: TCP
+                name: cloudaudition-port
+                port: 8080
+                targetPort: 8080
         - kubectl get service cloudaudition
         - |
-          kubectl port-forward pods/$POD 8080:8080 &
+          kubectl port-forward svc/cloudaudition 8181:8080 &
           FORWARD_PID=$!
-        - curl --request GET 'http://localhost:8080/healthz'
+        - curl --request GET 'http://localhost:8181/healthz'
         - kill $FORWARD_PID
