@@ -86,10 +86,6 @@ jobs:
                 targetPort: 8080
           EOF
         - kubectl get service cloudaudition
-        - touch ./debug.log
-        - |
-          kubectl port-forward svc/cloudaudition 8181:8080 > ./debug.log 2>&1 &
-          FORWARD_PID=$!
-        - curl --request GET 'http://127.0.0.1:8181/healthz'
-        - cat ./debug.log
-        - kill $FORWARD_PID
+        - kubectl port-forward svc/cloudaudition 8181:8080 &
+        - sleep 30
+        - curl http://localhost:8181/messages
