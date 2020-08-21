@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/DragonSSS/cloud-audition.svg?branch=master)](https://travis-ci.org/DragonSSS/cloud-audition)
+[![Build Status](https://travis-ci.com/DragonSSS/cloud-audition.svg?token=thAs5cG2qtRSo4WkQp6Z&branch=master)](https://travis-ci.com/DragonSSS/cloud-audition)
 
 # cloud audition
-
-
