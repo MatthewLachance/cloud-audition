@@ -102,5 +102,5 @@ jobs:
             restartPolicy: Always
           EOF
         - kubectl get pods
-        - kubectl wait --for=condition=Ready --timeout=600s  pod/busybox
+        - kubectl wait --for=condition=ContainersReady --timeout=600s  pod/busybox
         - kubectl exec busybox -- curl --request GET 'http://cloudaudition:8080/healthz'
