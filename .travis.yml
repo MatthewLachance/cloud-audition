@@ -65,7 +65,9 @@ jobs:
                     - containerPort: 8080
           EOF
         - kubectl wait --for=condition=available --timeout=600s  deployment/cloudaudition
-        - kubectl get deployments cloudaudition
+        - kubectl get deployment cloudaudition
+        - kubectl get pods -l=app=cloudaudition
+        - kubectl logs -l app=cloudaudition
         - kubectl expose deployment cloudaudition --port=8080 --target-port=8080 --name=cloudaudition
         - kubectl get service cloudaudition
         - |
