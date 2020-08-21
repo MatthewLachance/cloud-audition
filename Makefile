@@ -38,7 +38,11 @@ build-image:
 
 lint-local:
 		docker run --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:v1.30.0 $(LINTER) run -v
+
 lint:
 		$(LINTER) run
 
-.PHONY: all build clean setup build-linux test show-coverage build-image lint-local lint
+swag:
+		swag init -g main.go
+
+.PHONY: all build clean setup build-linux test show-coverage build-image lint-local lint swag
