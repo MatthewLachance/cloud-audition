@@ -64,7 +64,7 @@ jobs:
                   ports:
                     - containerPort: 8080
           EOF
-        - kubectl wait --for=condition=available --timeout=600s  deployment/cloudaudition
+        - kubectl wait --for=condition=available --timeout=60s  deployment/cloudaudition
         - kubectl get deployment cloudaudition
         - kubectl logs -l app=cloudaudition
         - |
@@ -86,3 +86,8 @@ jobs:
                 targetPort: 8080
           EOF
         - kubectl get service cloudaudition
+        - |
+          kubectl port-forward svc/cloudaudition 8181:8080 &
+          FORWARD_PID=$!
+        - curl --request GET 'http://127.0.0.1:8181/healthz'
+        - kill $FORWARD_PID
