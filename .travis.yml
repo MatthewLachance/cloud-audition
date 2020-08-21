@@ -87,5 +87,5 @@ jobs:
           EOF
         - kubectl get service cloudaudition
         - kubectl port-forward svc/cloudaudition 8181:8080 &
-        - sleep 30
-        - curl http://localhost:8181/messages
+        - sleep 10
+        - curl http://localhost:8181/healthz
