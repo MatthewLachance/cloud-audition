@@ -84,9 +84,21 @@ jobs:
                 name: cloudaudition-port
                 port: 8080
                 targetPort: 8080
+          EOF
         - kubectl get service cloudaudition
         - |
-          kubectl port-forward svc/cloudaudition 8181:8080 &
-          FORWARD_PID=$!
-        - curl --request GET 'http://localhost:8181/healthz'
-        - kill $FORWARD_PID
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: busybox
+          spec:
+            containers:
+            - image: busybox:1.13.1
+              command:
+                - sleep
+                - "3600"
+              name: busybox
+            restartPolicy: Always
+          EOF
+        - kubectl exec busybox -- curl --request GET 'http://cloudaudition:8080/healthz'
